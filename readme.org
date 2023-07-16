@@ -1,0 +1,21 @@
+#+TITLE: organ
+#+DESCRIPTION: custom org-mode parser
+#+AUTHOR: ellis
+
+This is a modular tool for extracting information from emacs org-mode
+files. It's highly opinionated and only suited for parsing my
+documents. This means I may introduce syntax which is not supported by
+or which can't be interpreted by Emacs Org-Mode. It also means that
+/the complete Org-element API will not be supported/. The most
+troublesome of org-mode features are simply ignored.
+
+This project is driven by the idea that org-mode is pretty cool, but
+that previous attempts to build a robust parser implementation have
+been hindered by their attempts to clone the functionality as well.
+
+My goals are as follows:
+- org->sxp :: takes org-mode stream outputs SXP forms
+- parallel :: take advantage of multi-threading to parse multiple
+  trees simultaneously
+- composable :: specialized methods for combining and composing
+  org-mode nodes
