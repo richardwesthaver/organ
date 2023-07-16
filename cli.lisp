@@ -1,6 +1,12 @@
 (defpackage :organ-cli
-  (:use :cl :organ :clingon)
-  (:export :main))
+  (:use :cl :organ)
+  (:import-from
+   :clingon
+   :make-option
+   :make-command
+   :getopt
+   :run)
+  (:export :main :start :opts :handler))
 
 (in-package :organ-cli)
 
@@ -24,7 +30,7 @@
     (princ "organ [INPUT] [...]")
     (terpri)))
 
-(defun start-cli ()
+(defun start ()
   (make-command
    :name "organ"
    :description "run organ-cli"
@@ -32,6 +38,6 @@
    :handler #'handler))
 
 (defun main ()
-  (run (start-cli))
+  (run (start))
   (print "greetings, stranger!")
   (terpri))
