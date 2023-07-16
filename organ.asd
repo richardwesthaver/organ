@@ -12,6 +12,6 @@
   :components ((:file "cli")))
 
 (defsystem organ/tests
-  :depends-on ("organ" "fiveam")
+  :depends-on ("organ" "organ/cli" "fiveam")
   :components ((:file "tests"))
   :perform (test-op (op c) (uiop:symbol-call :fiveam :run! :organ)))
