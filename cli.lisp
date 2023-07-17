@@ -6,38 +6,42 @@
    :make-command
    :getopt
    :run)
-  (:export :main :start :opts :handler))
+  (:export :main :start :handler :*organ-cmd*))
 
 (in-package :organ-cli)
 
-(defun opts ()
-  (list
-   (make-option
-    :flag
-    :description "short help"
-    :short-name #\h
-    :key :help)
-   (make-option
-    :string
-    :description "input"
-    :short-name #\i
-    :long-name "input"
-    :initial-value nil
-    :key :input)))
+(defmacro mk-slot (name) "make slot-name"
+  `(intern (string-upcase (if (stringp ,name) ,name ,(string name))) :keyword))
+
+(defmacro mk-short (name) "make short-name"
+  `(character (aref (if (stringp ,name) ,name (symbol-name ,name)) 0)))
+
+(defmacro opt (name desc &optional init type)
+  "shorthand for `make-option'."
+  `(make-option
+    ,(if type (mk-slot type) ':string)
+    :description ,desc
+    :short-name ,(mk-short name)
+    :long-name ,(string name)
+    :initial-value ,(or init)
+    :key ,(mk-slot name)))
 
 (defun handler (cmd)
   (when (getopt cmd :help)
     (princ "organ [INPUT] [...]")
     (terpri)))
 
-(defun start ()
-  (make-command
-   :name "organ"
-   :description "run organ-cli"
-   :options (opts)
-   :handler #'handler))
+(defparameter *organ-cmd*
+  (make-command :name "organ"
+		:description "run organ-cli"
+		:options
+		(list
+		 (opt "input" "input file")
+		 (opt "output" "output file")
+		 (opt "config" "sxp config"))
+		:handler #'handler))
 
 (defun main ()
-  (run (start))
-  (print "greetings, stranger!")
+  (run *organ-cmd*)
+  (print "OK.")
   (terpri))

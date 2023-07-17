@@ -7,7 +7,7 @@
 (defsystem organ/cli
   :depends-on ("organ" "clingon")
   :build-operation "program-op"
-  :build-pathname "organ"
+  :build-pathname "bin/organ"
   :entry-point "organ-cli:main"
   :components ((:file "cli")))
 

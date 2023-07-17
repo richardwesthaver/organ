@@ -19,3 +19,56 @@ My goals are as follows:
   trees simultaneously
 - composable :: specialized methods for combining and composing
   org-mode nodes
+
+  #+begin_src sh :results output replace
+    make test
+  #+end_src
+
+  #+RESULTS:
+  #+begin_example
+  sbcl --noinform --non-interactive --eval '(asdf:load-asd "organ.asd")' --eval '(ql:quickload :organ)' --eval '(ql:quickload :organ/cli)' --eval '(ql:quickload :organ/tests)'  --eval '(in-package :organ-tests)' --eval "(run! 'organ)"
+  To load "organ":
+    Load 1 ASDF system:
+      organ
+  ; Loading "organ"
+
+  To load "organ/cli":
+    Load 1 ASDF system:
+      organ/cli
+  ; Loading "organ/cli"
+
+  To load "organ/tests":
+    Load 1 ASDF system:
+      organ/tests
+  ; Loading "organ/tests"
+
+
+  Running test suite ORGAN
+   Running test ORG->SXP f
+   Running test SXP->ORG f
+   Running test suite ORGAN-CLI
+    Running test SANITY .
+    Running test INPUT .
+    Running test OUTPUT .
+   Did 5 checks.
+      Pass: 3 (60%)
+      Skip: 0 ( 0%)
+      Fail: 2 (40%)
+
+   Failure Details:
+   --------------------------------
+   SXP->ORG in ORGAN []: 
+
+  NIL
+
+   was NIL.
+   --------------------------------
+   --------------------------------
+   ORG->SXP in ORGAN []: 
+
+  NIL
+
+   was NIL.
+   --------------------------------
+
+  #+end_example
