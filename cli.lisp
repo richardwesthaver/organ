@@ -1,17 +1,20 @@
 (defpackage :organ-cli
-  (:use :cl :organ)
+  (:use :cl :organ :clingon)
   (:import-from
    :clingon
    :make-option
    :make-command
+   :command-arguments
    :getopt
    :run)
-  (:export :main :start :handler :*organ-cmd*))
+  (:export :main :start :handler :*organ-cmd* :mk-slot :mk-short :opt))
 
 (in-package :organ-cli)
 
+;; we define some utils as macros so that we can use them at
+;; compile-time.
 (defmacro mk-slot (name) "make slot-name"
-  `(intern (string-upcase (if (stringp ,name) ,name ,(string name))) :keyword))
+  `(intern ,(string-upcase name) :keyword))
 
 (defmacro mk-short (name) "make short-name"
   `(character (aref (if (stringp ,name) ,name (symbol-name ,name)) 0)))
@@ -26,22 +29,30 @@
     :initial-value ,(or init)
     :key ,(mk-slot name)))
 
+(defun props-handler (cmd)
+  (let ((args (command-arguments cmd)))
+    (format t "running props on ~A~%" args)))
+
+(defun props-cmd ()
+  (make-command :name "props"
+		:description "print a list of file properties found in INPUT"
+		:usage "[options] input"
+		:handler #'props-handler))
+
 (defun handler (cmd)
-  (when (getopt cmd :help)
-    (princ "organ [INPUT] [...]")
-    (terpri)))
+  (let ((args (command-arguments cmd)))
+    (format t "~A~%" args)))
 
 (defparameter *organ-cmd*
   (make-command :name "organ"
-		:description "run organ-cli"
+		:version "0.1.0"
+		:description "organ-cli"
 		:options
 		(list
 		 (opt "input" "input file")
 		 (opt "output" "output file")
 		 (opt "config" "sxp config"))
+		:sub-commands (list (props-cmd))
 		:handler #'handler))
 
-(defun main ()
-  (run *organ-cmd*)
-  (print "OK.")
-  (terpri))
+(defun main () (run *organ-cmd*))
