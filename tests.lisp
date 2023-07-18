@@ -1,19 +1,20 @@
 (defpackage :organ-tests
   (:use :cl :organ :organ-cli :fiveam)
   (:import-from :clingon :parse-command-line :getopt)
-  (:shadowing-import-from #:fiveam #:test))
+  (:shadowing-import-from #:fiveam #:test)
+  (:export :test-all))
 
 (in-package :organ-tests)
 
-(def-suite organ
+(def-suite :organ
   :description "Organ test-suite.")
-(in-suite organ)
+(in-suite :organ)
 (test org->sxp
   (is nil))
 (test sxp->org
   (is nil))
 
-(def-suite* organ-cli :in organ)
+(def-suite* :organ-cli :in :organ)
 
 (test sanity
   (let ((cmd (parse-command-line *organ-cmd* '("-i" "foo" "-o" "bar"))))
@@ -22,3 +23,5 @@
 
 (test input (is (parse-command-line *organ-cmd* '("test.org"))))
 (test output (is (parse-command-line *organ-cmd* '("test.org" "file.sxp"))))
+
+(defun test-all () (fiveam:run! :organ))
