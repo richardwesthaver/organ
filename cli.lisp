@@ -7,7 +7,7 @@
    :command-arguments
    :getopt
    :run)
-  (:export :main :start :handler :*organ-cmd* :mk-slot :mk-short :opt))
+  (:export :main :start :handler :props-handler :props-cmd :cmd :cmds :mk-slot :mk-short :opt :opts))
 
 (in-package :organ-cli)
 
@@ -25,10 +25,15 @@
     ,(if type (mk-slot type) ':string)
     :description ,desc
     :short-name ,(mk-short name)
-    :long-name ,(string name)
+    :long-name ,name
     :initial-value ,(or init)
     :key ,(mk-slot name)))
 
+(defun opts ()
+  (list (opt "input" "input file")
+	(opt "output" "output file")
+	(opt "config" "sxp config")))
+  
 (defun props-handler (cmd)
   (let ((args (command-arguments cmd)))
     (format t "running props on ~A~%" args)))
@@ -36,23 +41,21 @@
 (defun props-cmd ()
   (make-command :name "props"
 		:description "print a list of file properties found in INPUT"
-		:usage "[options] input"
 		:handler #'props-handler))
+
+(defun cmds ()
+  (list (props-cmd)))
 
 (defun handler (cmd)
   (let ((args (command-arguments cmd)))
     (format t "~A~%" args)))
 
-(defparameter *organ-cmd*
+(defun cmd ()
   (make-command :name "organ"
 		:version "0.1.0"
 		:description "organ-cli"
-		:options
-		(list
-		 (opt "input" "input file")
-		 (opt "output" "output file")
-		 (opt "config" "sxp config"))
-		:sub-commands (list (props-cmd))
+		:options (opts)
+		:sub-commands (cmds)
 		:handler #'handler))
 
-(defun main () (run *organ-cmd*))
+(defun main () (run (cmd)))
