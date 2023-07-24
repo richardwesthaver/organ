@@ -16,6 +16,10 @@
 
 (in-package :organ)
 
+(defvar *org-todo-keywords*
+  '("TODO" "DONE" "FIND" "FOUND" "RESEARCH" "RECORD" "DONE" "OUTLINE"
+    "DRAFT" "REVIEW" "FIX" "IMPL" "TEST" "FIXED" "GOTO" "HACK" "NOTE" "CODE" "LINK"))
+
 (defvar org-headline-regexp (cl-ppcre:parse-string "^([*]+)\\s+(.*)$"))
 (defvar org-file-property-regexp (cl-ppcre:parse-string "^[#+](.*)[:]\\s+(.*)$"))
 (defvar org-property-regexp (cl-ppcre:parse-string "^[:](.*)[:]\\s+(.*)$"))
@@ -36,26 +40,26 @@
   "List of all org-element objects provided by org-element.el in 'org-element-all-objects'")
 
 (defclass org-element ()
-  ((kind :initarg :kind :initform nil)))
+  ((text :initarg :text :accessor text)
+   (kind :initarg :kind :initform nil)))
+
+(defgeneric org-parse-lines (object))
+
+(defmethod org-parse-lines ((object org-element))
+  (let ((lines (lines (read-org-slice-from-string (slot-value object 'text)))))
+  (loop for i from 1 for x across lines
+	collect
+	(if (cl-ppcre:scan org-headline-regexp x) (list i 'headline x)
+	    (if (cl-ppcre:scan org-file-property-regexp x) (list i 'file-property x)
+		(if (cl-ppcre:scan org-property-regexp x) (list i 'node-property x)
+		    (list i nil x)))))))
 
 (defclass org-stream (fundamental-stream)
   ((stream :initarg :stream :reader stream-of)))
 
-(defgeneric org-parse-all (object))
-
 (defclass org-file (org-element org-stream)
   ((path :initarg :path :accessor path)
-   (text :initarg :text :accessor text)
    (kind :allocation :class :initform :file)))
-
-(defmethod org-parse-all ((object org-file))
-  (let ((lines (sb-unicode:lines (slot-value object 'text))))
-  (loop for i from 1 for x in lines
-	collect
-	(if (cl-ppcre:scan org-headline-regexp x) (list 'headline i x)
-	    (if (cl-ppcre:scan org-file-property-regexp x) (list i 'file-property x)
-		(if (cl-ppcre:scan org-property-regexp x) (list i 'node-property x)
-		    (list i nil x)))))))
 
 (defun read-org-file (path)
   (make-instance 'org-file :path path :text (read-file-string path)))
@@ -63,8 +67,13 @@
 ;; (slot-value (read-org-file "~/org/notes.org") 'text)
 
 (defclass org-slice (org-element)
-  ((lines :initarg :lines :initform (vector))
-   (kind :allocation :class :initform :slice)))
+  ((lines :initarg :lines :type vector :accessor lines)
+   (kind :allocation :class :initform :org-slice)))
 
 (defun read-org-slice (&optional stream)
-  (make-instance 'org-slice :lines (loop for i in stream collect i)))
+  (let ((slice (make-instance 'org-slice)))
+    (setf (lines slice) (apply #'vector (loop for l = (read-line stream nil :eof) until (eq l :eof) collect l)))
+    slice))
+
+(defun read-org-slice-from-string (str)
+  (with-input-from-string (s str) (read-org-slice s)))

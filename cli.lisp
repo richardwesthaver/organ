@@ -34,14 +34,23 @@
 	(opt "output" "output file")
 	(opt "config" "sxp config")))
   
-(defun props-handler (cmd)
+(defun show-handler (cmd)
   (let ((args (command-arguments cmd)))
-    (format t "running props on ~A~%" args)))
+    (format t "running show ~A~%" args)))
 
-(defun props-cmd ()
-  (make-command :name "props"
-		:description "print a list of file properties found in INPUT"
+(defun show-cmd ()
+  (make-command :name "show"
+		:description "print details about INPUT"
 		:handler #'props-handler))
+
+(defun parse-handler (cmd)
+  (let ((args (command-arguments cmd)))
+    (format t "running parser on ~A~%" args)))
+
+(defun parse-cmd ()
+  (make-command :name "parse"
+		:description "print a syntax tree of INPUT"
+		:handler #'parse-handler))
 
 (defun cmds ()
   (list (props-cmd)))
