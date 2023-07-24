@@ -1,5 +1,5 @@
 (defsystem organ
-  :depends-on ("sxp" "alexandria" "uiop" "cl-ppcre")
+  :depends-on ("sxp" "cl-ppcre")
   :version "0.1.0"
   :description "org-mode utils"
   :in-order-to ((test-op (test-op :organ/tests)))

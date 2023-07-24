@@ -10,4 +10,4 @@ compile:$(src); $(LISP) $(compile)
 build:compile;mkdir -p bin;$(LISP) $(build)
 test:compile;$(LISP) $(test)
 debug:compile;sbcl --noinform $(load)
-clean:;rm -rf bin
+clean:;rm -rf bin *.fasl
