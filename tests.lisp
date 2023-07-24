@@ -27,8 +27,8 @@
 	(parse-command-line (cmd) '("--input" "test.org")))
        #'organ-cli:handler))
   (is (eql
-       (clingon:command-handler (parse-command-line (cmd) '("props" "test.org")))
-       #'organ-cli:props-handler)))
+       (clingon:command-handler (parse-command-line (cmd) '("show" "test.org")))
+       #'organ-cli:show-handler)))
 
 (test output (is (parse-command-line (cmd) '("test.org" "file.sxp"))))
 

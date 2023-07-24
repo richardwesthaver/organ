@@ -7,7 +7,7 @@
    :command-arguments
    :getopt
    :run)
-  (:export :main :start :handler :props-handler :props-cmd :cmd :cmds :mk-slot :mk-short :opt :opts))
+  (:export :main :start :handler :show-handler :show-cmd :parse-handler :parse-cmd :cmd :cmds :mk-slot :mk-short :opt :opts))
 
 (in-package :organ-cli)
 
@@ -40,8 +40,8 @@
 
 (defun show-cmd ()
   (make-command :name "show"
-		:description "print details about INPUT"
-		:handler #'props-handler))
+		:description "show details"
+		:handler #'show-handler))
 
 (defun parse-handler (cmd)
   (let ((args (command-arguments cmd)))
@@ -49,11 +49,13 @@
 
 (defun parse-cmd ()
   (make-command :name "parse"
-		:description "print a syntax tree of INPUT"
+		:description "print org-ast"
 		:handler #'parse-handler))
 
 (defun cmds ()
-  (list (props-cmd)))
+  (list
+   (show-cmd)
+   (parse-cmd)))
 
 (defun handler (cmd)
   (let ((args (command-arguments cmd)))
