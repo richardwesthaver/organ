@@ -60,7 +60,7 @@
     ("GOTO" todo) ("HACK" todo) ("NOTE" todo) ("CODE" todo) ("LINK" todo))
   "List of keywords accepted by `organ'. ")
 
-(defvar org-todo-keyword-map
+(defun org-todo-keyword-map ()
   (let ((kws (make-hash-table :size 20)))
     (dolist (kw *org-todo-keywords*)
       (let ((k (intern (car kw)))
@@ -68,6 +68,8 @@
 	(assert (member v *org-todo-keyword-types*))
 	(setf (gethash k kws) v)))
     kws))
+
+(defvar org-todo-keyword-map (org-todo-keyword-map))
 
 (defmacro org-todo-keyword-p (kw)
   "Search for symbol KW in `org-todo-keyword-map' returning the
@@ -111,7 +113,7 @@ associated value or nil if not found."
 
 (defmacro org-init (class &optional text)
   "Initialize a instance of `org-element' CLASS with optional TEXT."
-  `(make-instance ',class ,@(when text `(:text ,text))))
+  `(make-instance ',class :text ,(or text "")))
 
 ;; parent and children are implicit. A single instance of
 ;; `org-element' contains a complete org-mode AST.
@@ -159,18 +161,19 @@ associated value or nil if not found."
 ;; when level=0, headline is uninitialized
 (defclass org-headline (org-element)
   ((kind :allocation :class :initform :org-headline)
-   (state :accessor state)
+   (state :accessor state :initform nil)
    (level :accessor level :initform 0)
    (props :accessor props :initform nil)
    (priority :accessor priority :initform nil)
    (tags :accessor tags :initform nil)
    (title :accessor title :initform "")))
 
-(defun make-org-headline (text) (org-init org-headline text))
+(defun make-org-headline (text)
+  (org-init org-headline text))
 
 (defmethod org-parse ((self org-headline))
   (with-input-from-string (s (text self))
-    (when (peek-char #\* s)
+    (when (peek-char #\* s) ;; start headline
       (let ((line (read-line s)))
 	(multiple-value-bind (start _ reg-start reg-end)
 	    ;; scan for headline
@@ -187,11 +190,10 @@ associated value or nil if not found."
 			   (multiple-value-bind (match subs)
 			       ;; scan for todo-keyword
 			       (cl-ppcre:scan-to-strings org-todo-keyword-regexp sub)
-			       (declare (ignorable subs))
 			       (if match
-				   (let ((kw? (svref subs 0)))
-				     (if (org-todo-keyword-p kw?)
-					 (setf (state self) (make-org-todo-keyword kw?)
+				   (let ((k (svref subs 0)))
+				     (if (org-todo-keyword-p k)
+					 (setf (state self) (make-org-todo-keyword k)
 					       (title self) (svref subs 1))
 					 (setf (title self) match)))
 				   (setf (title self) sub))))))))
@@ -199,20 +201,20 @@ associated value or nil if not found."
 	(let ((tag-str (cl-ppcre:scan-to-strings org-tag-regexp (title self))))
 	  (when tag-str
 	    (setf (tags self) (apply #'vector (mapcar #'make-org-tag (org-tag-split tag-str)))
-		  (title self) (subseq (title self) 0 (- (length (title self)) (length tag-str)))))))))
+		  (title self) (subseq (title self) 0 (- (length (title self)) (length tag-str))))))))
   ;; TODO 2023-07-24: cookies,priority
-  self)
+  self))
 
 (defclass org-todo-keyword (org-element)
   ((kind :allocation :class :initform :org-todo-keyword)
    (todo-type :accessor todo-type :initform nil :type symbol)))
 
-(defun make-org-todo-keyword (text) (org-parse (org-init org-todo-keyword text)))
+(defun make-org-todo-keyword (text) (org-init org-todo-keyword text))
 
 (defmethod org-parse ((self org-todo-keyword))
-  (let* ((text (slot-value self 'text))
+  (let* ((text (text self))
 	 (type (gethash (intern text) org-todo-keyword-map nil)))
-    (if type (setf (slot-value self 'todo-type) type))
+    (when type (setf (todo-type self) type))
     self))
 
 (defclass org-list (org-element)
@@ -221,7 +223,7 @@ associated value or nil if not found."
 (defclass org-tag (org-element)
   ((kind :allocation :class :initform :org-tag)))
 
-(defun make-org-tag (text) (org-parse (org-init org-tag text)))
+(defun make-org-tag (text) (org-init org-tag text))
 
 (defmethod org-parse ((self org-tag)) self) ;; nop
 
