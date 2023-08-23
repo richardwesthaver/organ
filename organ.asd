@@ -10,7 +10,7 @@
   :version "0.1.0"
   :build-operation "program-op"
   :build-pathname "bin/organ"
-  :entry-point "organ-cli:main"
+  :entry-point "organ.cli:main"
   :components ((:file "cli")))
 
 (defsystem organ/tests

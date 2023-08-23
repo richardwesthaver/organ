@@ -1,5 +1,5 @@
 (defpackage :organ-tests
-  (:use :cl :organ :organ-cli :fiveam)
+  (:use :cl :organ :organ.cli :fiveam)
   (:import-from :clingon :parse-command-line :getopt)
   (:shadowing-import-from #:fiveam #:test)
   (:export :run-tests :*test-file*))
@@ -23,7 +23,7 @@
     (is (string= (title (org-parse (make-org-headline s))) "DONE testing stuff "))
     (is (= (length (tags (org-parse (make-org-headline s)))) 2))))
 
-(def-suite* :organ-cli :in :organ)
+(def-suite* :organ.cli :in :organ)
 
 (test sanity
   (let ((cmd (parse-command-line (cmd) nil)))
@@ -33,10 +33,10 @@
   (is (eql
        (clingon:command-handler
 	(parse-command-line (cmd) '("--input" "test.org")))
-       #'organ-cli:handler))
+       #'organ.cli:handler))
   (is (eql
        (clingon:command-handler (parse-command-line (cmd) '("show" "test.org")))
-       #'organ-cli:show-handler)))
+       #'organ.cli:show/handler)))
 
 (test output (is (parse-command-line (cmd) '("test.org" "file.sxp"))))
 
