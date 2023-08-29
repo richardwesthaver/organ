@@ -6,10 +6,10 @@
   :components ((:file "organ")))
 
 (defsystem organ/cli
-  :depends-on ("organ" "clingon")
+  :depends-on ("organ" "macs" "clingon")
   :version "0.1.0"
   :build-operation "program-op"
-  :build-pathname "bin/organ"
+  :build-pathname "organ"
   :entry-point "organ.cli:main"
   :components ((:file "cli")))
 

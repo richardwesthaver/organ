@@ -1,27 +1,19 @@
 (defpackage :organ.cli
-  (:use :cl :organ :clingon)
-  (:export :main :start :handler :show/handler :show/cmd :parse/handler :parse/cmd :cmd :cmds :mk-slot :mk-short :opt :opts))
+  (:use :cl :organ :macs.sym :macs.cli :clingon)
+  (:export :main :start :handler :show/handler :show/cmd :parse/handler :parse/cmd :cmd :cmds :opt :opts))
 
 (in-package :organ.cli)
-
-;; we define some utils as macros so that we can use them at
-;; compile-time.
-(defmacro mk-slot (name) "make slot-name"
-  `(intern ,(string-upcase name) :keyword))
-
-(defmacro mk-short (name) "make short-name"
-  `(character (aref (if (stringp ,name) ,name (symbol-name ,name)) 0)))
 
 (defmacro opt (name desc &optional init type persist)
   "shorthand for `make-option'."
   `(make-option
-    ,(if type (mk-slot type) ':string)
+    ,(if type (make-slot-name type) ':string)
     :description ,desc
-    :short-name ,(mk-short name)
+    :short-name ,(make-short-name name)
     :long-name ,name
     :initial-value ,(or init)
     ,@(when persist '(:persistent t))
-    :key ,(mk-slot name)))
+    :key ,(make-slot-name name)))
 
 (defun opts ()
   (list (opt "input" "input file" nil nil t)

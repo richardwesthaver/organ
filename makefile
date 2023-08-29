@@ -7,7 +7,7 @@ build=--eval '(ql:quickload :organ/cli)' --eval '(asdf:make :organ/cli)'
 test=--eval '(ql:quickload :organ/tests)' --eval '(asdf:test-system :organ)'
 all:compile build test;
 compile:$(src); $(LISP) $(compile)
-build:compile;mkdir -p bin;$(LISP) $(build)
+build:compile;$(LISP) $(build)
 test:compile;$(LISP) $(test)
 debug:compile;sbcl --noinform $(load)
-clean:;rm -rf bin *.fasl
+clean:;rm -rf organ *.fasl
