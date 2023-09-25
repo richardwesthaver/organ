@@ -20,6 +20,21 @@ been hindered by their attempts to clone the functionality as well.
   - composable :: specialized methods for combining and composing
     org-mode nodes
 - *Dependencies*
+  - SBCL ::
   - cl-ppcre :: =(ql:quickload :cl-ppcre)=
   - sxp :: https://lab.rwest.io/ellis/sxp
-  - clingon :: =(ql:quickload :clingon)= - organ/cli only
+  - macs :: [[https://lab.rwest.io/ellis/macs]]
+
+* Tests
+#+begin_src lisp :results output replace :wrap src lisp :exports both
+  (ql:quickload :macs)
+  (ql:quickload :organ)
+  (ql:quickload :organ/tests)
+  (load "tests.lisp")
+  (in-package :organ.tests)
+  (setq *log-level* nil) ;; :debug,t
+  (setq *catch-test-errors* t)
+  (setq *compile-tests* t)
+  (list (multiple-value-list (do-tests :skel)) (test-results *test-suite*))
+#+end_src
+
