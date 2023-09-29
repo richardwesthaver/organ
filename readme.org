@@ -27,14 +27,58 @@ been hindered by their attempts to clone the functionality as well.
 
 * Tests
 #+begin_src lisp :results output replace :wrap src lisp :exports both
-  (ql:quickload :macs)
-  (ql:quickload :organ)
-  (ql:quickload :organ/tests)
   (load "tests.lisp")
-  (in-package :organ.tests)
-  (setq *log-level* nil) ;; :debug,t
-  (setq *catch-test-errors* t)
-  (setq *compile-tests* t)
-  (list (multiple-value-list (do-tests :skel)) (test-results *test-suite*))
+  (setq log:*log-level* nil) ;; :debug,t
+  (setq rt:*catch-test-errors* t)
+  (setq rt:*compile-tests* nil)
+  (list (multiple-value-list (rt:do-tests :organ)) (rt:test-results rt:*test-suite*))
 #+end_src
+
+#+RESULTS:
+#+begin_src lisp
+in suite ORGAN with 6/6 tests:
+#<PASS OUTPUT> 
+#<PASS SUBCMDS> 
+#<PASS SANITY> 
+#<PASS ORG-HEADLINE> 
+#<PASS ORG-LINES> 
+#<PASS ORG-FILE> 
+No tests failed.
+#+end_src
+
+* Ideas
+** TODO parse org-elements as sxp
+:LOGBOOK:
+- State "TODO"       from              [2023-09-25 Mon 15:23]
+:END:
+#+name: oe-init
+#+begin_src emacs-lisp :results silent
+  (slime-start)
+#+end_src
+
+#+begin_src lisp :results silent
+  (ql:quickload :organ)
+#+end_src
+
+#+name: oe-form
+#+begin_src emacs-lisp :results output replace
+  (macroexpand-1 (org-element-parse-buffer))
+#+end_src
+
+#+RESULTS: oe-form
+
+#+name: oe-sxp
+#+begin_src lisp :results output :var in=oe-form()
+  (let ((sxp (sxp:make-sxp)))
+    ;; SIMPLE-READER-ERROR #\) when using read
+    (sxp:wrap-from-string! sxp in)
+    (describe sxp))
+#+end_src
+
+#+RESULTS: oe-sxp
+: #<SXP:SXP {1001532593}>
+:   [standard-object]
+: 
+: Slots with :INSTANCE allocation:
+:   AST                            = NIL
 

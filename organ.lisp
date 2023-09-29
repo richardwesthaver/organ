@@ -207,9 +207,10 @@ associated value or nil if not found."
 
 (defclass org-todo-keyword (org-element)
   ((kind :allocation :class :initform :org-todo-keyword)
-   (todo-type :accessor todo-type :initform nil :type symbol)))
+   (todo-type :accessor todo-type :initarg :type :initform nil :type symbol)))
 
-(defun make-org-todo-keyword (text) (org-init org-todo-keyword text))
+(defun make-org-todo-keyword (text &optional type) 
+  (make-instance 'org-todo-keyword :text text :type type))
 
 (defmethod org-parse ((self org-todo-keyword))
   (let* ((text (text self))

@@ -1,5 +1,5 @@
 (defpackage :organ-tests
-  (:use :cl :organ :organ.cli :macs.rt))
+  (:use :cl :organ :organ.cli :macs :rt))
 
 (in-package :organ-tests)
 
