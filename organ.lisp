@@ -1,6 +1,6 @@
 ;;; organ.lisp --- Org parser
 (defpackage :organ
-  (:use :cl :cl-ppcre :uiop)
+  (:use :cl :cl-ppcre :uiop :macs.sym :macs.fu)
   (:shadowing-import-from :sb-gray :fundamental-stream)
   (:export
    ;; params
@@ -24,7 +24,7 @@
    :org-kind
    :org-file
    :org-lines
-   :lines
+   :o-lines
    :org-stream
    :org-headline
    :level
@@ -122,10 +122,10 @@ associated value or nil if not found."
    (kind :initarg :kind :accessor org-kind :type keyword)))
 
 (defmethod org-parse-lines ((self org-element))
-  (let ((lines (lines (read-org-lines-from-string (slot-value self 'text)))))
+  (let ((lines (o-lines (read-org-lines-from-string (slot-value self 'text)))))
   (loop for i from 1 for x across lines
 	collect
-	(if (cl-ppcre:scan org-headline-regexp x) (list i 'headline x)
+	(if (cl-ppcre:scan org-headline-regexp x) (list i (symb 'headline) x)
 	    (if (cl-ppcre:scan org-file-property-regexp x) (list i 'file-property x)
 		(if (cl-ppcre:scan org-property-regexp x) (list i 'node-property x)
 		    (list i nil x)))))))
@@ -143,12 +143,12 @@ associated value or nil if not found."
 ;; (slot-value (read-org-file "~/org/notes.org") 'text)
 
 (defclass org-lines (org-element)
-  ((lines :initarg :lines :type vector :accessor lines)
+  ((lines :initarg :lines :type vector :accessor o-lines)
    (kind :allocation :class :initform :org-lines)))
 
 (defun read-org-lines (&optional stream)
   (let ((slice (make-instance 'org-lines)))
-    (setf (lines slice)
+    (setf (o-lines slice)
 	  (apply #'vector
 		 (loop for l = (read-line stream nil :eof)
 		       until (eq l :eof)
