@@ -1,7 +1,8 @@
 ;;; organ.lisp --- Org parser
 (defpackage :organ
-  (:use :cl :cl-ppcre :uiop :macs.sym :macs.fu)
+  (:use :cl :cl-ppcre :macs.sym :macs.fu)
   (:shadowing-import-from :sb-gray :fundamental-stream)
+  (:import-from :uiop :read-file-string)
   (:export
    ;; params
    :*org-todo-keyword-types*
@@ -138,7 +139,7 @@ associated value or nil if not found."
    (kind :allocation :class :initform :file)))
 
 (defun read-org-file (path)
-  (make-instance 'org-file :path path :text (uiop:read-file-string path)))
+  (make-instance 'org-file :path path :text (read-file-string path)))
 
 ;; (slot-value (read-org-file "~/org/notes.org") 'text)
 
