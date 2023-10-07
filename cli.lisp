@@ -4,7 +4,7 @@
 
 (in-package :organ.cli)
 
-(define-cli :constant $cli
+(define-cli $cli
   :name "organ"
   :version "0.0.1"
   :description "organ.cli"
@@ -13,11 +13,14 @@
 	  (:name help :global t)
 	  (:name version :global t))
   :cmds (make-cmds 
-	  (:name inspect :opts (make-opts (:name input)) :thunk '(inspect (read-org-file $a1)))
-	  (:name show :thunk '(fmt-tree t (remove-if-not (lambda (x) (eql (cadr x) 'headline)) 
-					   (org-parse-lines (read-org-file (open $a1)))) 
-			       :layout :down))
-	  (:name parse :opts (make-opts (:name input) (:name output)))))
+	  (:name inspect :opts (make-opts (:name input)) :thunk (lambda (a) (inspect (read-org-file a))))
+	  (:name show :thunk (lambda (a) (fmt-tree t (remove-if-not (lambda (x) (eql (cadr x) 'headline)) 
+								    (org-parse-lines (read-org-file (open a))))
+						   :layout :down)))
+	  (:name parse 
+	   :opts (make-opts (:name input) (:name output))
+	   :thunk nil))
+  (lambda (x y z) (* x y z)))
 
 (defun run ()
   (with-cli (opts cmds args) $cli
