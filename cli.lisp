@@ -4,6 +4,17 @@
 
 (in-package :organ.cli)
 
+(defcmd organ-inspect (inspect (read-org-file (car $args))))
+
+(defcmd organ-show
+    (fmt-tree t 
+	      (remove-if-not 
+	       (lambda (x) (eql (cadr x) 'headline)) 
+	       (org-parse-lines (read-org-file (open (car $args)))))
+	      :layout :down))
+
+(defcmd organ-parse (print t))
+
 (define-cli $cli
   :name "organ"
   :version "0.0.1"
@@ -13,14 +24,12 @@
 	  (:name help :global t)
 	  (:name version :global t))
   :cmds (make-cmds 
-	  (:name inspect :opts (make-opts (:name input)) :thunk (lambda (a) (inspect (read-org-file a))))
-	  (:name show :thunk (lambda (a) (fmt-tree t (remove-if-not (lambda (x) (eql (cadr x) 'headline)) 
-								    (org-parse-lines (read-org-file (open a))))
-						   :layout :down)))
+	  (:name inspect :opts (make-opts (:name input)) :thunk organ-inspect)
+	  (:name show :thunk organ-show)
 	  (:name parse 
 	   :opts (make-opts (:name input) (:name output))
-	   :thunk nil))
-  (lambda (x y z) (* x y z)))
+	   :thunk organ-parse))
+  (print-help $cli))
 
 (defun run ()
   (with-cli (opts cmds args) $cli

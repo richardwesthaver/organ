@@ -14,6 +14,6 @@
   :components ((:file "cli")))
 
 (defsystem organ/tests
-  :depends-on ("organ" "organ/cli" "macs/rt")
+  :depends-on ("organ" "organ/cli" "rt")
   :components ((:file "tests"))
-  :perform (test-op (op c) (uiop:symbol-call '#:macs.rt '#:do-tests)))
+  :perform (test-op (op c) (uiop:symbol-call '#:rt '#:do-tests)))
