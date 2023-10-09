@@ -6,7 +6,7 @@
   :components ((:file "organ")))
 
 (defsystem organ/cli
-  :depends-on ("organ" "macs")
+  :depends-on ("organ" "macs" "cli")
   :version "0.1.0"
   :build-operation "program-op"
   :build-pathname "organ"
@@ -14,6 +14,6 @@
   :components ((:file "cli")))
 
 (defsystem organ/tests
-  :depends-on ("organ" "organ/cli" "rt")
+  :depends-on ("organ" "macs" "rt")
   :components ((:file "tests"))
   :perform (test-op (op c) (uiop:symbol-call '#:rt '#:do-tests)))

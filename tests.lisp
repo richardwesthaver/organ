@@ -1,5 +1,5 @@
 (defpackage :organ-tests
-  (:use :cl :organ :organ.cli :macs :rt))
+  (:use :cl :organ :macs :rt))
 
 (in-package :organ-tests)
 
@@ -24,23 +24,3 @@
 	;; ??? this ain't right
 	(is (string= (title (org-parse (make-org-headline s))) "DONE testing stuff "))
 	(is (= (length (tags (org-parse (make-org-headline s)))) 2))))
-
-;; (defsuite* :organ.cli :in :organ)
-
-(deftest sanity ()
-  ;; (let ((cmd (parse-command-line (cmd) nil)))
-  ;;  (is (string= "organ" (clingon:command-name cmd))))
-)
-
-(deftest subcmds ()
-  ;;  (is (eql
-  ;; (parse-command-line (cmd) '("--input" "test.org")))
-  ;; #'organ.cli:handler))
-  ;; (is (eql
-  ;; (clingon:command-handler (parse-command-line (cmd) '("show" "test.org")))
-  ;; #'organ.cli:show/handler))
-)
-
-(deftest output ()
-  ;; (is (parse-command-line (cmd) '("test.org" "file.sxp")))
-  )
