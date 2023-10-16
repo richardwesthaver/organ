@@ -232,3 +232,5 @@ associated value or nil if not found."
 (defclass org-block (org-element) ())
 
 (defclass org-paragraph (org-element) ())
+
+(provide :organ)
